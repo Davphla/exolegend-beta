@@ -1,5 +1,16 @@
 #include "gladiator.h"
-Gladiator *gladiator;
+#include "../include/PathFinder.hpp"
+#include <csignal>
+#include <utility>
+#include "../include/Vector.hpp"
+
+#include <valgrind/valgrind.h>
+#include <valgrind/memcheck.h>
+
+__attribute__((constructor))
+void initFunction() {
+    VALGRIND_DISABLE_ERROR_REPORTING;
+}
 
 #define ROBOT_ID 80
 
@@ -9,39 +20,56 @@ Gladiator *gladiator;
 #elif defined(ROBOT_ID) && ROBOT_ID == 80
     #define DELTA_X  0.0028
     #define DELTA_Y -0.0069
-#endif 
+#endif
+
+Gladiator *gladiator = nullptr;
+
+#define DEG2RAD(x) (x * 0.01745329252)
+#define RAD2DEG(x) (x * 57.2957795131)
+
+Control control;
 
 void reset()
 {
-    // fonction de reset:
-    // initialisation de toutes vos variables avant le début d'un match
-    gladiator->log("Call of reset function"); // GFA 4.5.1
+    delay(10);
+    gladiator->log("Call of reset function");
 }
 
 void setup()
 {
-    // instanciation de l'objet gladiator
     gladiator = new Gladiator();
-    // enregistrement de la fonction de reset qui s'éxecute à chaque fois avant qu'une partie commence
-    gladiator->game->onReset(&reset); // GFA 4.4.1
-    gladiator->game->enableFreeMode(RemoteMode::OFF);
+    gladiator->game->onReset(&reset);
+    gladiator->log("Initialization");
+}
+
+void gloop() {
+    auto path = navigation::PathFinder::findPath(gladiator->maze->getSquare(0, 0), gladiator->maze->getSquare(11, 11));
+    for (auto square : path) {
+        gladiator->log("Path %d %d", square->i, square->j);
+    }
+    exit(0);
+    return;
+    gladiator->control->setWheelSpeed(WheelAxis::LEFT, 0.5);
+    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, -0.5);
+    while (gladiator->game->isStarted()) {
+        //auto position = gladiator->robot->getData().position;
+        //auto cposition = gladiator->robot->getData().cposition;
+        //gladiator->log("Position %f", RAD2DEG(cposition.a));
+        // LOGIC HERE
+    }
 }
 
 void loop()
 {
-    MazeSquare ms;
-    gladiator->robot->setCalibrationOffset(DELTA_X, DELTA_Y, 0); //TODO CHANGE A CALIBRATION OFFSET
-    gladiator->control->setWheelSpeed(WheelAxis::LEFT, 0.2); 
-    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, 0.2);
+    gladiator->log("Game status %d", gladiator->game->isStarted());
 
-    if (gladiator->game->isStarted())
-    { // tester si un match à déjà commencer
-        // code de votre stratégie
-        gladiator->log("Hello world - Game Started"); // GFA 4.5.1
+    if (gladiator->game->isStarted()) {
+    #ifdef FREE_MODE
+        gladiator->game->enableFreeMode(RemoteMode::OFF);
+    #else
+        gladiator->game->enableFreeMode(RemoteMode::ON);
+    #endif
+        gloop();
     }
-    else
-    {
-        gladiator->log("Hello world - Game not Startd yet"); // GFA 4.5.1
-    }
-    delay(300);
+    delay(200);
 }

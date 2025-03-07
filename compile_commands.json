@@ -1,6 +1,6 @@
 [
     {
-        "command": "/sbin/g++ -o .pio/build/simu/src/main.o -c -std=gnu++17 -Wall -g -DPLATFORMIO=60117 -DTARGET_X86 -Iinclude -Isrc -Ilibs/gladiator_x86/include -Ilibs/gladiator_x86 src/main.cpp",
+        "command": "/sbin/g++ -o .pio/build/simu/src/main.o -c -std=gnu++17 -Wall -g -DPLATFORMIO=60117 -DTARGET_X86 -DFREE_MODE -Iinclude -Isrc -Ilibs/gladiator_x86/include -Ilibs/gladiator_x86 src/main.cpp",
         "directory": "/home/mat/project/exolegend/exolegend",
         "file": "src/main.cpp",
         "output": ".pio/build/simu/src/main.o"
