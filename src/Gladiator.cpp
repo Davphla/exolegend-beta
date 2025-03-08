@@ -40,7 +40,7 @@ coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
 
     for (auto [coordinate, metric] : metrics) {
         if (metric.no_bomb == 0
-            || check_shrink(coordinate, shrink_value, MAP_SIZE) {
+            || check_shrink(coordinate, shrink_value, MAP_SIZE)) {
             continue;
         }
         coordinate_t distance = {coordinate.first - coords.first,
