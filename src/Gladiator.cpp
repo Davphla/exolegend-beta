@@ -17,12 +17,11 @@ struct square_metric_t {
 
 using metrics_t = std::map<coordinate_t, square_metric_t>;
 
-
 static score_t getCaseScore(const MazeSquare &maze)
 {
     score_t count = 0;
-    #define ADD_SCORE_IF_POSSESSED(square) \
-        count += (square != nullptr && square->possession);
+#define ADD_SCORE_IF_POSSESSED(square)                                        \
+    count += (square != nullptr && square->possession);
 
     ADD_SCORE_IF_POSSESSED(maze.northSquare)
     ADD_SCORE_IF_POSSESSED(maze.southSquare)
@@ -31,8 +30,13 @@ static score_t getCaseScore(const MazeSquare &maze)
     return count;
 }
 
-static void fillNeighborsScores(const MazeSquare &maze,
-                                metrics_t &metrics)
+static void checkSquare(const MazeSquare &maze, square_metric_t &cur, metrics_t &metrics)
+{
+    cur.score = getCaseScore(maze);
+    fillNeighborsScores(maze, metrics);
+}
+
+static void fillNeighborsScores(const MazeSquare &maze, metrics_t &metrics)
 {
     score_t current_square_score = getCaseScore(maze);
     const std::vector<MazeSquare *> neighbors = {
@@ -41,11 +45,10 @@ static void fillNeighborsScores(const MazeSquare &maze,
     for (MazeSquare *neighbor : neighbors) {
         if (neighbor != nullptr) {
             coordinate_t coord = {neighbor->i, neighbor->j};
-            square_metric_t &cur = metrics[coord];
-            if (cur.score)
+            square_metric_t &cur_metric = metrics[coord];
+            if (cur_metric.score)
                 continue;
-            cur.score = getCaseScore(*neighbor);
-            fillNeighborsScores(*neighbor, metrics);
+            checkSquare(*neighbor, cur_metric, metrics);
         }
     }
 }
