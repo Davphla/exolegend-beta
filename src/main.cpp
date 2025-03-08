@@ -39,34 +39,51 @@ void setup()
 }
 
 void depositBomb() {
-    if (gladiator->weapon->getBombCount() == 0) {
-        return;
+    if (gladiator->weapon->getBombCount() > 0 && sentience._path.empty()) {
+        gladiator->weapon->dropBombs(gladiator->weapon->getBombCount());
     }
-    gladiator->weapon->dropBombs(gladiator->weapon->getBombCount());
-}
-
-void findNewBomb() {
-    if (sentience.goal != nullptr) {
-        if (sentience.goal->coin.value > 0) {
-            return;
-        }
-    }
-    coordinate_t coords = sentience.findClosestBomb(*gladiator->maze->getNearestSquare());
-    sentience.goal = gladiator->maze->getSquare(coords.first, coords.second);
-    sentience._path = navigation::PathFinder::findPath(gladiator->maze->getNearestSquare(), gladiator->maze->getSquare(coords.first, coords.second));
-    gladiator->log("Following path of %ld checkpoint", sentience._path.size());
 }
 
 void followPath() {
     if (sentience._path.empty()) {
         return;
     }
+
     auto realPosition = mazeToReal({sentience._path.back()->i, sentience._path.back()->j});
     go_to({realPosition.x, realPosition.y, 0}, gladiator->robot->getData().position);
 
     if (sentience._path.back() == gladiator->maze->getNearestSquare()) {
-        gladiator->log("Checkpoint");
         sentience._path.pop_back();
+    }
+}
+
+void findNewBomb() {
+    /*if (sentience.goal != nullptr) {
+        if (sentience.goal->coin.value > 0) {
+            return;
+        }
+    }*/
+    coordinate_t coords = sentience.findClosestBomb(*gladiator->maze->getNearestSquare());
+    sentience.goal = gladiator->maze->getSquare(coords.first, coords.second);
+    sentience._path = navigation::PathFinder::findPath(gladiator->maze->getNearestSquare(), gladiator->maze->getSquare(coords.first, coords.second));
+}
+
+void findNewPlace() {
+    /*if (sentience.goal != nullptr) {
+        return;
+    }*/
+    coordinate_t coords = sentience.metrics.begin()->second.coords;
+    sentience.goal = gladiator->maze->getSquare(coords.first, coords.second);
+    sentience._path = navigation::PathFinder::findPath(gladiator->maze->getNearestSquare(), gladiator->maze->getSquare(coords.first, coords.second));
+}
+
+void changeState() {
+    if (sentience._path.empty()) {
+        if (gladiator->weapon->getBombCount() == 0) {
+            findNewBomb();
+        } else {
+            findNewPlace();
+        }
     }
 }
 
@@ -77,8 +94,9 @@ void gloop()
         sentience.processMaze(*square);
     }
     depositBomb();
-    findNewBomb();
+    changeState();
     followPath();
+
     static std::time_t start_time = std::time(0);
     std::time_t elapsed_time = std::time(0) - start_time;
     if (elapsed_time >= 15) {

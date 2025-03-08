@@ -39,8 +39,8 @@ void go_to(Position cons, Position pos)
         consv = std::clamp(consv, -vlimit, vlimit);
 
         double robotRadius = gladiator->robot->getRobotRadius();
-        consvl = consv - robotRadius * consw; // GFA 3.6.2
-        consvr = consv + robotRadius * consw; // GFA 3.6.2
+        consvl = consv - robotRadius * consw;
+        consvr = consv + robotRadius * consw;
     }
     else
     {
@@ -48,6 +48,6 @@ void go_to(Position cons, Position pos)
         consvl = 0;
     }
 
-    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, consvr, false); // GFA 3.2.1
-    gladiator->control->setWheelSpeed(WheelAxis::LEFT, consvl, false);  // GFA 3.2.1
+    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, consvr, false);
+    gladiator->control->setWheelSpeed(WheelAxis::LEFT, consvl, false);
 }
