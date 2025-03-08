@@ -28,9 +28,14 @@ public:
     void checkSquare(const MazeSquare &maze, square_metric_t &cur);
     coordinate_t findClosestBomb(MazeSquare &cur);
     void reset();
+    void calculateBestEntry(const MazeSquare &maze);
+
 
     void processMaze(const MazeSquare &maze);
 
     metrics_t metrics = {};
     uint shrink_value = 0;
+    std::vector<square_metric_t> best_entries;
+
+    static const uint NB_ENTRY = 5;
 };

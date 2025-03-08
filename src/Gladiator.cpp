@@ -88,14 +88,8 @@ void SentienceGladiator::reset()
     metrics.clear();
 }
 
-void SentienceGladiator::processMaze(const MazeSquare &maze)
+void SentienceGladiator::calculateBestEntry(const MazeSquare &maze)
 {
-    coordinate_t coords = {maze.i, maze.j};
-    square_metric_t &cur_metric = metrics[coords];
-
-    reset();
-    checkSquare(maze, cur_metric);
-
     std::vector<square_metric_t> metric_list;
     for (auto &[coordinate, entry] : metrics) {
         coordinate_t distance = {coordinate.first - maze.i,
@@ -106,12 +100,30 @@ void SentienceGladiator::processMaze(const MazeSquare &maze)
                            + distance.second * distance.second));
         metric_list.push_back(entry);
     }
+
     std::sort(metric_list.begin(), metric_list.end(),
               [](const square_metric_t &a, const square_metric_t &b) {
                   return a.final_score > b.final_score;
               });
+#if DEBUG
     for (square_metric_t entry : metric_list) {
         std::cout << entry.final_score << " ";
     }
     std::cout << std::endl;
+#endif
+    for (size_t i = 0; i < NB_ENTRY && i < metric_list.size(); ++i) {
+        best_entries.push_back(metric_list[i]);
+    }
+}
+
+void SentienceGladiator::processMaze(const MazeSquare &maze)
+{
+    coordinate_t coords = {maze.i, maze.j};
+    square_metric_t &cur_metric = metrics[coords];
+
+    reset();
+    checkSquare(maze, cur_metric);
+    if (gladiator->weapon->getBombCount() != 0) {
+        calculateBestEntry(maze);
+    }
 }
