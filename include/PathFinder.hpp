@@ -57,6 +57,8 @@ namespace navigation {
 
     class PathFinder {
     public:
+        PathFinder() = delete;
+
         static std::unordered_map<MazeSquare *, std::shared_ptr<Node>> getNeighbours(std::shared_ptr<Node> node) {
             std::unordered_map<MazeSquare* ,std::shared_ptr<Node>> neighbours;
             if (node->getSquare()->northSquare != nullptr) {
@@ -151,26 +153,3 @@ namespace navigation {
         };
     };
 };
-
-/*
-    static bool lowerF(std::vector<std::shared_ptr<Node>>& openList, std::shared_ptr<Node> successor) {
-            for (auto& node: openList) {
-                if (node->getSquare() == successor->getSquare() && node->getF() < successor->getF()) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        static void addNode(std::vector<std::shared_ptr<Node>>& openList, std::vector<std::shared_ptr<Node>>& closedList, std::shared_ptr<Node>& successor) {
-            for (auto& node: closedList) {
-                if (node->getSquare() == successor->getSquare()) {
-                    if (node->getF() < successor->getF()) {
-                        return;
-                    } else {
-                        openList.push_back(node);
-                    }
-                }
-            }
-        }
-*/

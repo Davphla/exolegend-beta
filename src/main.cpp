@@ -1,9 +1,7 @@
 #include "gladiator.h"
 #include "../include/PathFinder.hpp"
 #include <csignal>
-#include <unordered_map>
-#include <utility>
-#include "../include/Vector.hpp"
+#include "../include/Bomb.hpp"
 
 #define ROBOT_ID 80
 
@@ -35,16 +33,8 @@ void setup()
 }
 
 void gloop() {
-    auto path = navigation::PathFinder::findPath(gladiator->maze->getSquare(0, 0), gladiator->maze->getSquare(11, 11));
-    for (auto square : path) {
-        gladiator->log("Path %d %d", square->i, square->j);
-    }
-    while (gladiator->game->isStarted()) {
-        //auto position = gladiator->robot->getData().position;
-        //auto cposition = gladiator->robot->getData().cposition;
-        //gladiator->log("Position %f", RAD2DEG(cposition.a));
-        // LOGIC HERE
-    }
+    auto tmp = navigation::findClosestBombPath(gladiator->maze->getNearestSquare(), {{0, 0}, {12, 12}});
+    gladiator->log("Bomb: %u %u", tmp->i, tmp->j);
 }
 
 void loop()
