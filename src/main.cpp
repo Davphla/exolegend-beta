@@ -39,10 +39,6 @@ void gloop() {
     for (auto square : path) {
         gladiator->log("Path %d %d", square->i, square->j);
     }
-    exit(0);
-    return;
-    gladiator->control->setWheelSpeed(WheelAxis::LEFT, 0.5);
-    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, -0.5);
     while (gladiator->game->isStarted()) {
         //auto position = gladiator->robot->getData().position;
         //auto cposition = gladiator->robot->getData().cposition;
