@@ -5,11 +5,20 @@
 #include <map>
 #include <vector>
 
+using path_t = int;
+
 struct square_metric_t {
     uint score;   // closest neighboor
     uint nb_visit;// nb time player visit this square
     uint no_bomb;
     bool is_visited;
+};
+
+struct goal_t {
+    coordinate_t coords;
+    uint score;
+    path_t path;
+    uint final_score;
 };
 
 class SentienceGladiator {
@@ -28,4 +37,5 @@ public:
 
     metrics_t metrics = {};
     uint shrink_value = 0;
+    std::vector<goal_t> = {};
 };
