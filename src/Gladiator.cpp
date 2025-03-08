@@ -3,20 +3,6 @@
 #include <map>
 #include <vector>
 
-using bomb_t = bool;
-using score_t = uint;
-
-struct coordinate_t {
-    int x;
-    int y;
-};
-
-struct square_metric_t {
-    uint score; // closest neighboor
-    uint nb_visit; // nb time player visit this square
-};
-
-using metrics_t = std::map<coordinate_t, square_metric_t>;
 
 static score_t getCaseScore(const MazeSquare &maze)
 {
@@ -31,7 +17,8 @@ static score_t getCaseScore(const MazeSquare &maze)
     return count;
 }
 
-static void checkSquare(const MazeSquare &maze, square_metric_t &cur, metrics_t &metrics)
+static void checkSquare(const MazeSquare &maze, square_metric_t &cur,
+                        metrics_t &metrics)
 {
     cur.score = getCaseScore(maze);
 
@@ -56,7 +43,7 @@ static void fillNeighborsMetrics(const MazeSquare &maze, metrics_t &metrics)
     }
 }
 
-void processMaze(const MazeSquare &maze)
+void SentienceGladiator::processMaze(const MazeSquare &maze)
 {
     metrics_t metrics = {};
 
