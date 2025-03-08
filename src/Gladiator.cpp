@@ -35,10 +35,10 @@ static void checkSquare(const MazeSquare &maze, square_metric_t &cur, metrics_t 
     cur.score = getCaseScore(maze);
 
     // recursive call to explore all square
-    fillNeighborsScores(maze, metrics);
+    fillNeighborsMetrics(maze, metrics);
 }
 
-static void fillNeighborsScores(const MazeSquare &maze, metrics_t &metrics)
+static void fillNeighborsMetrics(const MazeSquare &maze, metrics_t &metrics)
 {
     score_t current_square_score = getCaseScore(maze);
     const std::vector<MazeSquare *> neighbors = {
@@ -59,6 +59,6 @@ void processMaze(const MazeSquare &maze)
 {
     metrics_t metrics = {};
 
-    fillNeighborsScores(maze, metrics);
+    fillNeighborsMetrics(maze, metrics);
     std::sort(metrics.begin(), metrics.end(), std::greater<>());
 }
