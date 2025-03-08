@@ -1,16 +1,9 @@
 #include "gladiator.h"
 #include "../include/PathFinder.hpp"
 #include <csignal>
+#include <unordered_map>
 #include <utility>
 #include "../include/Vector.hpp"
-
-#include <valgrind/valgrind.h>
-#include <valgrind/memcheck.h>
-
-__attribute__((constructor))
-void initFunction() {
-    VALGRIND_DISABLE_ERROR_REPORTING;
-}
 
 #define ROBOT_ID 80
 
@@ -39,7 +32,6 @@ void setup()
 {
     gladiator = new Gladiator();
     gladiator->game->onReset(&reset);
-    gladiator->log("Initialization");
 }
 
 void gloop() {

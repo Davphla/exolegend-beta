@@ -2,8 +2,10 @@
 
 #include "gladiator.h"
 #include <algorithm>
+#include <memory>
+#include <unordered_map>
 #include <vector>
-#include <valgrind/memcheck.h>
+
 
 extern Gladiator *gladiator;
 
@@ -11,13 +13,13 @@ namespace navigation {
     class Node {
     private:
         MazeSquare *_square;
-        Node *_parent;
+        std::shared_ptr<Node> _parent;
         int16_t _g;
         int16_t _h;
 
     public:
         explicit Node(MazeSquare *square) : _square(square), _parent(nullptr), _g(0), _h(0) {}
-        explicit Node(MazeSquare *square, Node *parent) : _square(square), _parent(parent), _g(0), _h(0) {}
+        explicit Node(MazeSquare *square, std::shared_ptr<Node> parent) : _square(square), _parent(parent), _g(0), _h(0) {}
         ~Node() = default;
 
         bool operator==(const Node &node) const {
@@ -28,12 +30,8 @@ namespace navigation {
             return this->_square;
         }
 
-        Node *getParent() const {
+        std::shared_ptr<Node> getParent() const {
             return this->_parent;
-        }
-
-        void setParent(Node *parent) {
-            this->_parent = parent;
         }
 
         int16_t getG() const {
@@ -55,32 +53,32 @@ namespace navigation {
         int16_t getF() const {
             return this->_g + this->_h;
         }
-
-        std::vector<Node *> getNeighbours() {
-            std::vector<Node *> neighbours;
-            if (this->_square->northSquare != nullptr) {
-                neighbours.push_back(new Node(this->_square->northSquare, this));
-            }
-            if (this->_square->southSquare != nullptr) {
-                neighbours.push_back(new Node(this->_square->southSquare, this));
-            }
-            if (this->_square->eastSquare != nullptr) {
-                neighbours.push_back(new Node(this->_square->eastSquare, this));
-            }
-            if (this->_square->westSquare != nullptr) {
-                neighbours.push_back(new Node(this->_square->westSquare, this));
-            }
-            return neighbours;
-        }
     };
 
     class PathFinder {
     public:
-        static int16_t getLeastF(std::vector<Node *> &openList) {
-            int16_t leastFIndex = 0;
-            for (uint16_t i = 0; i < openList.size(); i++) {
-                if (openList[i]->getF() <= openList[leastFIndex]->getF()) {
-                    leastFIndex = i;
+        static std::unordered_map<MazeSquare *, std::shared_ptr<Node>> getNeighbours(std::shared_ptr<Node> node) {
+            std::unordered_map<MazeSquare* ,std::shared_ptr<Node>> neighbours;
+            if (node->getSquare()->northSquare != nullptr) {
+                neighbours[node->getSquare()->northSquare] = std::make_shared<Node>(node->getSquare()->northSquare, node);
+            }
+            if (node->getSquare()->southSquare != nullptr) {
+                neighbours[node->getSquare()->southSquare] = std::make_shared<Node>(node->getSquare()->southSquare, node);
+            }
+            if (node->getSquare()->eastSquare != nullptr) {
+                neighbours[node->getSquare()->eastSquare] = std::make_shared<Node>(node->getSquare()->eastSquare, node);
+            }
+            if (node->getSquare()->westSquare != nullptr) {
+                neighbours[node->getSquare()->westSquare] = std::make_shared<Node>(node->getSquare()->westSquare, node);
+            }
+            return neighbours;
+        }
+
+        static auto getLeastF(std::unordered_map<MazeSquare *, std::shared_ptr<Node>> &openList) {
+            auto leastFIndex = openList.begin();
+            for (auto it = openList.begin(); it != openList.end(); it++) {
+                if (it->second->getF() <= it->second->getF()) {
+                    leastFIndex = it;
                 }
             }
             return leastFIndex;
@@ -90,7 +88,7 @@ namespace navigation {
             return abs(start->i - end->i) + abs(start->j - end->j);
         }
 
-        static void modifyNode(std::vector<Node *>& openList, Node* successor) {
+        static void modifyNode(std::vector<std::shared_ptr<Node>>& openList, std::shared_ptr<Node> successor) {
             for (auto& node: openList) {
                 if (node->getSquare() == successor->getSquare() && node->getF() > successor->getF()) {
                     *node = *successor;
@@ -100,7 +98,7 @@ namespace navigation {
             openList.push_back(successor);
         }
 
-        static std::vector<MazeSquare *> reconstructPath(Node *node) {
+        static std::vector<MazeSquare *> reconstructPath(std::shared_ptr<Node> node) {
             std::vector<MazeSquare *> path;
             while (node != nullptr) {
                 path.push_back(node->getSquare());
@@ -110,29 +108,41 @@ namespace navigation {
         }
 
         static std::vector<MazeSquare *> findPath(MazeSquare *start, MazeSquare *goal) {
-            std::vector<Node *> openList;
-            std::vector<Node *> closedList;
+            std::unordered_map<MazeSquare *, std::shared_ptr<Node>> openList;
+            std::unordered_map<MazeSquare *, std::shared_ptr<Node>> closedList;
 
-            openList.push_back(new Node(start));
+            openList[start] = std::make_shared<Node>(start);
             uint16_t iteration = 0;
             while (!openList.empty()) {
-                auto index = getLeastF(openList);
-                auto q = openList[index];
-                openList.erase(openList.cbegin() + index);
-                closedList.push_back(q);
+                auto it = getLeastF(openList);
+                auto* ms = it->first;
+                auto q = it->second;
+                openList.erase(it);
+                closedList[ms] = q;
                 if (q->getSquare() == goal) {
                     gladiator->log("Path found on %d iterations", iteration);
                     return reconstructPath(q);
                 }
-                auto successors = q->getNeighbours();
+                auto successors = getNeighbours(q);
 
-                for (auto successor: successors) {
-                    if (std::find(closedList.begin(), closedList.end(), successor) != closedList.end()) {
+                for (auto [successorMS, successorQ]: successors) {
+                    if (closedList.find(successorMS) != closedList.end()) {
                         continue;
                     }
-                    successor->setG(q->getG() + 1);
-                    successor->setH(getManhattanDistance(successor->getSquare(), goal));
-                    modifyNode(openList, successor);
+                    if (successorMS == goal) {
+                        gladiator->log("Path found on %d iterations", iteration);
+                        return reconstructPath(successorQ);
+                    }
+                    successorQ->setG(q->getG() + 1);
+                    successorQ->setH(getManhattanDistance(successorQ->getSquare(), goal));
+                    if (auto it = openList.find(successorMS); it != openList.end() && it->second->getF() < successorQ->getF()) {
+                        continue;
+                    }
+                    if (auto it = closedList.find(successorMS); it != closedList.end() && it->second->getF() < successorQ->getF()) {
+                        continue;
+                    } else {
+                        openList[successorMS] = successorQ;
+                    }
                 }
                 iteration++;
             }
@@ -142,24 +152,25 @@ namespace navigation {
     };
 };
 
-        /*static bool lowerF(std::vector<Node>& openList, Node& successor) {
+/*
+    static bool lowerF(std::vector<std::shared_ptr<Node>>& openList, std::shared_ptr<Node> successor) {
             for (auto& node: openList) {
-                if (node.getSquare() == successor.getSquare() && node.getF() < successor.getF()) {
+                if (node->getSquare() == successor->getSquare() && node->getF() < successor->getF()) {
                     return true;
                 }
             }
             return false;
         }
 
-        static void addNode(std::vector<Node>& openList, std::vector<Node>& closedList, Node& successor) {
+        static void addNode(std::vector<std::shared_ptr<Node>>& openList, std::vector<std::shared_ptr<Node>>& closedList, std::shared_ptr<Node>& successor) {
             for (auto& node: closedList) {
-                if (node.getSquare() == successor.getSquare()) {
-                    if (node.getF() < successor.getF()) {
+                if (node->getSquare() == successor->getSquare()) {
+                    if (node->getF() < successor->getF()) {
                         return;
                     } else {
                         openList.push_back(node);
                     }
                 }
             }
-        }*/
-
+        }
+*/
