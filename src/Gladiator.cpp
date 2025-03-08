@@ -33,6 +33,8 @@ static score_t getCaseScore(const MazeSquare &maze)
 static void checkSquare(const MazeSquare &maze, square_metric_t &cur, metrics_t &metrics)
 {
     cur.score = getCaseScore(maze);
+
+    // recursive call to explore all square
     fillNeighborsScores(maze, metrics);
 }
 
