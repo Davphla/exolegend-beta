@@ -33,7 +33,7 @@ void setup()
 }
 
 void gloop() {
-    auto tmp = navigation::findClosestBomb(gladiator->maze->getNearestSquare(), {{6, 0}, {12, 12}});
+    auto tmp = navigation::findClosestBombPath(gladiator->maze->getNearestSquare(), {{0, 0}, {12, 12}});
     gladiator->log("Bomb: %u %u", tmp->i, tmp->j);
 }
 
