@@ -70,13 +70,24 @@ void SentienceGladiator::checkSquare(const MazeSquare &maze,
     fillNeighborsMetrics(maze);
 }
 
+void SentienceGladiator::reset()
+{
+    metrics.clear();
+}
+
 void SentienceGladiator::processMaze(const MazeSquare &maze)
 {
     coordinate_t coords = {maze.i, maze.j};
     square_metric_t &cur_metric = metrics[coords];
 
+    reset();
     checkSquare(maze, cur_metric);
-    //std::sort(metrics.begin(), metrics.end(), [](const square_metric_t &a, const square_metric_t &b) {
+
+    //std::vector<square_metric_t> metric_list;
+    //for (const auto &entry : metrics) {
+    //    metric_list.push_back(entry.second);
+    //}
+    //std::sort(metric_list.begin(), metric_list.end(), [](const square_metric_t &a, const square_metric_t &b) {
     //    return a.score > b.score;
     //});
 }

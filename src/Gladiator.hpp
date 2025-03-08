@@ -1,6 +1,9 @@
 #include <unordered_map>
 #include <map>
 #include "../include/utils.hpp"
+#include "gladiator.h"
+#include <map>
+#include <vector>
 
 /*namespace std {
     template <>
@@ -30,6 +33,7 @@ public:
     void fillNeighborsMetrics(const MazeSquare &maze);
     void checkSquare(const MazeSquare &maze, square_metric_t &cur);
     coordinate_t findClosestBomb(MazeSquare &cur);
+    void reset();
 
     void processMaze(const MazeSquare &maze);
 
