@@ -1,8 +1,7 @@
 #include "gladiator.h"
 #include <vector>
 #include <map>
-
-using coordinate_t = std::pair<int, int>;
+#include "../include/utils.hpp"
 
 struct square_metric_t {
     uint score;   // closest neighboor

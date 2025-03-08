@@ -1,6 +1,7 @@
 #include "../include/Bomb.hpp"
 #include "../include/PathFinder.hpp"
 #include "Gladiator.hpp"
+#include "Vector.hpp"
 #include "gladiator.h"
 #include <csignal>
 
@@ -36,25 +37,15 @@ void setup()
     sentience = SentienceGladiator();
 }
 
-std::pair<float, float> getGoodBombCoordinate(coordinate_t coord)
-{
-
-    auto squareSize = gladiator->maze->getSquareSize();
-    float x = (coord.first) * squareSize + (squareSize / 2);
-    float y = (coord.second) * squareSize + (squareSize / 2);
-
-    return std::pair<float, float>(x, y);
-}
-
 void gloop()
 {
     MazeSquare square = *gladiator->maze->getNearestSquare();
     sentience.processMaze(square);
     coordinate_t coords = sentience.findClosestBomb(square);
-    std::pair<float, float> real_coords = getGoodBombCoordinate(coords);
+    auto realPosition= mazeToReal(coords);
 
-    gladiator->log("Real bomb coordinates: (%f, %f)", coords.first, coords.second);
-    go_to(gladiator, {real_coords.first, real_coords.second, 0},
+    gladiator->log("Real bomb coordinates: (%f, %f)", realPosition.x, realPosition.y);
+    go_to(gladiator, {realPosition.x, realPosition.y, 0},
           gladiator->robot->getData().position);
 
     //gladiator->log("Bomb: %u %u", tmp->i, tmp->j);

@@ -1,9 +1,11 @@
 #include "Gladiator.hpp"
+#include "utils.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <map>
 #include <vector>
+#include <math.h>
 
 #define ADD_SCORE_IF_POSSESSED(square)                                        \
     count += (square != nullptr && square->possession);
@@ -20,20 +22,15 @@ SentienceGladiator::getCaseScore(const MazeSquare &maze)
     return count;
 }
 
-int absolute(int x)
-{
-    return ((x) > 0 ? (x) : -(x));
-}
-
 coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
 {
     coordinate_t coords = {cur.i, cur.j};
     coordinate_t closestBomb = {0, 0};// default value, to change
-    int minDistance = std::numeric_limits<int>::max();
+    float minDistance = std::numeric_limits<float>::max();
 
     for (const coordinate_t &bomb : bomb_metrics) {
         coordinate_t distance = {bomb.first - coords.first, bomb.second - coords.second};
-        int dist = absolute(distance.first) + absolute(distance.second);
+        int dist = ABS(distance.first) + ABS(distance.second);
         if (dist < minDistance) {
             minDistance = dist;
             closestBomb = coords;
