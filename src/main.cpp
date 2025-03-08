@@ -72,7 +72,7 @@ void findNewPlace() {
     /*if (sentience.goal != nullptr) {
         return;
     }*/
-    coordinate_t coords = sentience.metrics.begin()->second.coords;
+    coordinate_t coords = sentience.best_entries.front().coords;
     sentience.goal = gladiator->maze->getSquare(coords.first, coords.second);
     sentience._path = navigation::PathFinder::findPath(gladiator->maze->getNearestSquare(), gladiator->maze->getSquare(coords.first, coords.second));
 }

@@ -101,11 +101,25 @@ namespace navigation {
             openList.push_back(successor);
         }
 
+        static void optimizeMaze(std::deque<MazeSquare *>& path) {
+            for (int i = 0; i < path.size(); i++) {
+                for (int j = i + 1; j < path.size(); j++) {
+                    if (path[i]->i == path[j]->i && path[i]->j == path[j]->j) {
+                        path.erase(path.begin() + i, path.begin() + j);
+                    }
+                }
+            }
+        }
+
         static std::deque<MazeSquare *> reconstructPath(std::shared_ptr<Node> node) {
             std::deque<MazeSquare *> path;
             while (node != nullptr) {
                 path.push_back(node->getSquare());
                 node = node->getParent();
+            }
+            optimizeMaze(path);
+            while (path.size() > 3) {
+                path.pop_front();
             }
             return path;
         }
@@ -130,6 +144,9 @@ namespace navigation {
 
                 for (auto [successorMS, successorQ]: successors) {
                     if (closedList.find(successorMS) != closedList.end()) {
+                        continue;
+                    }
+                    if (successorMS->danger) {
                         continue;
                     }
                     if (successorMS == goal) {
