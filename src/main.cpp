@@ -37,28 +37,37 @@ void setup()
     sentience = SentienceGladiator();
 }
 
-void depositBomb() {
+void depositBomb()
+{
     gladiator->weapon->dropBombs(gladiator->weapon->getBombCount());
 }
 
 void gloop()
 {
-    depositBomb();
     MazeSquare square = *gladiator->maze->getNearestSquare();
     sentience.processMaze(square);
 
-    for (auto [coords, metric]: sentience.metrics) {
+    for (auto [coords, metric] : sentience.metrics) {
         if (metric.no_bomb > 0) {
             gladiator->log("Bomb on %d - %d", coords.first, coords.second);
         }
     }
     coordinate_t coords = sentience.findClosestBomb(square);
-    auto realPosition= mazeToReal(coords);
+    auto realPosition = mazeToReal(coords);
 
     gladiator->log("Bomb coordinates: (%f, %f)", coords.first, coords.second);
     go_to(gladiator, {realPosition.x, realPosition.y, 0},
           gladiator->robot->getData().position);
+    depositBomb();
     //gladiator->log("Bomb: %u %u", tmp->i, tmp->j);
+
+    // ~ 10 seconds
+    static std::time_t start_time = std::time(0);
+    std::time_t elapsed_time = std::time(0) - start_time;
+    if (elapsed_time >= 15) {
+        sentience.shrink_value += 1;
+        start_time = std::time(0); // reset start time
+    }
 }
 
 void loop()

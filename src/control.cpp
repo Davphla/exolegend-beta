@@ -1,6 +1,6 @@
 #include "Gladiator.hpp"
 
-float kw = 1.2;
+float kw = 1.2f;
 float kv = 1.f;
 float wlimit = 3.f;
 float vlimit = 0.6;
@@ -20,8 +20,7 @@ void go_to(Gladiator *gladiator, Position cons, Position pos)
     double dy = cons.y - pos.y;
     double d = sqrt(dx * dx + dy * dy);
 
-    if (d > erreurPos)
-    {
+    if (d > erreurPos) {
         double rho = atan2(dy, dx);
         double consw = kw * reductionAngle(rho - pos.a);
 
@@ -29,15 +28,17 @@ void go_to(Gladiator *gladiator, Position cons, Position pos)
         consw = abs(consw) > wlimit ? (consw > 0 ? 1 : -1) * wlimit : consw;
         consv = abs(consv) > vlimit ? (consv > 0 ? 1 : -1) * vlimit : consv;
 
-        consvl = consv - gladiator->robot->getRobotRadius() * consw; // GFA 3.6.2
-        consvr = consv + gladiator->robot->getRobotRadius() * consw; // GFA 3.6.2
-    }
-    else
-    {
+        consvl =
+            consv - gladiator->robot->getRobotRadius() * consw;// GFA 3.6.2
+        consvr =
+            consv + gladiator->robot->getRobotRadius() * consw;// GFA 3.6.2
+    } else {
         consvr = 0;
         consvl = 0;
     }
 
-    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, consvr, false); // GFA 3.2.1
-    gladiator->control->setWheelSpeed(WheelAxis::LEFT, consvl, false);  // GFA 3.2.1
+    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, consvr,
+                                      false);// GFA 3.2.1
+    gladiator->control->setWheelSpeed(WheelAxis::LEFT, consvl,
+                                      false);// GFA 3.2.1
 }

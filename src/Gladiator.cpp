@@ -22,6 +22,12 @@ SentienceGladiator::getCaseScore(const MazeSquare &maze)
     return count;
 }
 
+bool check_shrink(std::pair<uint, uint> coord, uint shrink, uint map_size) {
+    printf("Checking shrink for coordinates (%u, %u) with shrink value %u and map size %u\n", coord.first, coord.second, shrink, map_size);
+    return (((int)(coord.first - shrink) < 0 || coord.first + shrink >= map_size) ||
+            ((int)(coord.second - shrink) < 0 || coord.second + shrink >= map_size));
+}
+
 coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
 {
     coordinate_t coords = {cur.i, cur.j};
@@ -29,7 +35,7 @@ coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
     float minDistance = std::numeric_limits<float>::max();
 
     for (auto [coordinate, metric]: metrics) {
-        if (metric.no_bomb == 0) {
+        if (metric.no_bomb == 0 || check_shrink(coordinate, shrink_value, 11)) {
             continue;
         }
         coordinate_t distance = {coordinate.first - coords.first, coordinate.second - coords.second};

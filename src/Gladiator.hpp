@@ -5,17 +5,6 @@
 #include <map>
 #include <vector>
 
-/*namespace std {
-    template <>
-    struct hash<std::pair<int, int>> {
-        size_t operator()(const std::pair<int, int>& p) {
-            std::size_t h1 = std::hash<int>{}(p.first);
-            std::size_t h2 = std::hash<int>{}(p.second);
-            return h1 ^ (h2 << 1);
-        }
-    };
-}*/
-
 struct square_metric_t {
     uint score;   // closest neighboor
     uint nb_visit;// nb time player visit this square
@@ -38,4 +27,5 @@ public:
     void processMaze(const MazeSquare &maze);
 
     metrics_t metrics = {};
+    uint shrink_value = 0;
 };
