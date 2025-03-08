@@ -12,7 +12,7 @@ SentienceGladiator::getCaseScore(const MazeSquare &maze)
 {
     score_t count = 0;
 #define ADD_SCORE_IF_NOT_POSSESSED(square)                                    \
-    (square != nullptr && square->possession == 0)
+    (square != nullptr && square->possession == 0 && square->danger == 0)
 
     count += ADD_SCORE_IF_NOT_POSSESSED(maze.northSquare);
     count += ADD_SCORE_IF_NOT_POSSESSED(maze.southSquare);
@@ -35,7 +35,7 @@ bool check_shrink(std::pair<uint, uint> coord, uint shrink, uint map_size)
 coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
 {
     coordinate_t coords = {cur.i, cur.j};
-    coordinate_t closestBomb = {1, 1};// default value, to change
+    coordinate_t closestBomb = {6, 6};// default value, to change
     float minDistance = std::numeric_limits<float>::max();
 
     for (auto [coordinate, metric] : metrics) {

@@ -72,7 +72,7 @@ void findNewPlace() {
     /*if (sentience.goal != nullptr) {
         return;
     }*/
-    coordinate_t coords = sentience.metrics.begin()->second.coords;
+    coordinate_t coords = sentience.best_entries.front().coords;
     sentience.goal = gladiator->maze->getSquare(coords.first, coords.second);
     sentience._path = navigation::PathFinder::findPath(gladiator->maze->getNearestSquare(), gladiator->maze->getSquare(coords.first, coords.second));
 }
@@ -99,7 +99,7 @@ void gloop()
 
     static std::time_t start_time = std::time(0);
     std::time_t elapsed_time = std::time(0) - start_time;
-    if (elapsed_time >= 15) {
+    if (elapsed_time >= 20) {
         sentience.shrink_value += 1;
         start_time = std::time(0); // reset start time
     }

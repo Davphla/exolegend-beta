@@ -1,8 +1,8 @@
 #include "Gladiator.hpp"
 #include <algorithm>
 
-double kw = 1.2;
-double kv = 1.f;
+double kw = 3;
+double kv = 1.8f;
 double wlimit = 3.f;
 double vlimit = 0.6;
 double erreurPos = 0.07;

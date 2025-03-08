@@ -6,14 +6,11 @@
 #include <map>
 #include <vector>
 
-using path_t = int;
-
 struct square_metric_t {
     uint score;   // closest neighboor
     uint nb_visit;// nb time player visit this square
     uint no_bomb;
     bool is_visited;
-    path_t path;
     float final_score;
     coordinate_t coords;
 };
@@ -30,8 +27,6 @@ public:
     coordinate_t findClosestBomb(MazeSquare &cur);
     void reset();
     void calculateBestEntry(const MazeSquare &maze);
-
-
     void processMaze(const MazeSquare &maze);
 
     std::deque<MazeSquare *> _path;
