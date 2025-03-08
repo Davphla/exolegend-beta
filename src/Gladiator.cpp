@@ -40,7 +40,7 @@ coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
 
     for (auto [coordinate, metric] : metrics) {
         if (metric.no_bomb == 0
-            || check_shrink(coordinate, shrink_value, 11)) {
+            || check_shrink(coordinate, shrink_value, MAP_SIZE) {
             continue;
         }
         coordinate_t distance = {coordinate.first - coords.first,
@@ -92,6 +92,9 @@ void SentienceGladiator::calculateBestEntry(const MazeSquare &maze)
 {
     std::vector<square_metric_t> metric_list;
     for (auto &[coordinate, entry] : metrics) {
+        if (check_shrink(coordinate, shrink_value, MAP_SIZE)) {
+            continue;
+        }
         coordinate_t distance = {coordinate.first - maze.i,
                                  coordinate.second - maze.j};
         entry.final_score = entry.score

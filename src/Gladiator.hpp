@@ -38,4 +38,5 @@ public:
     std::vector<square_metric_t> best_entries;
 
     static const uint NB_ENTRY = 5;
+    static const uint MAP_SIZE = 11;
 };
