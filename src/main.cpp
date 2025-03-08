@@ -41,10 +41,20 @@ void gloop()
 {
     MazeSquare square = *gladiator->maze->getNearestSquare();
     sentience.processMaze(square);
+
+    for (auto [coords, metric]: sentience.metrics) {
+        if (metric.no_bomb > 0) {
+            gladiator->log("Bomb on %d - %d", coords.first, coords.second);
+        }
+    }
+
+
+
+
     coordinate_t coords = sentience.findClosestBomb(square);
     auto realPosition= mazeToReal(coords);
 
-    gladiator->log("Real bomb coordinates: (%f, %f)", realPosition.x, realPosition.y);
+    gladiator->log("Bomb coordinates: (%f, %f)", coords.first, coords.second);
     go_to(gladiator, {realPosition.x, realPosition.y, 0},
           gladiator->robot->getData().position);
 

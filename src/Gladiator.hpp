@@ -1,16 +1,27 @@
-#include "gladiator.h"
-#include <vector>
+#include <unordered_map>
 #include <map>
 #include "../include/utils.hpp"
+
+/*namespace std {
+    template <>
+    struct hash<std::pair<int, int>> {
+        size_t operator()(const std::pair<int, int>& p) {
+            std::size_t h1 = std::hash<int>{}(p.first);
+            std::size_t h2 = std::hash<int>{}(p.second);
+            return h1 ^ (h2 << 1);
+        }
+    };
+}*/
 
 struct square_metric_t {
     uint score;   // closest neighboor
     uint nb_visit;// nb time player visit this square
+    uint no_bomb;
+    bool is_visited;
 };
 
 class SentienceGladiator {
-    public:
-    using bomb_metric_t = std::vector<coordinate_t>;
+public:
     using metrics_t = std::map<coordinate_t, square_metric_t>;
     using bomb_t = bool;
     using score_t = uint;
@@ -23,5 +34,4 @@ class SentienceGladiator {
     void processMaze(const MazeSquare &maze);
 
     metrics_t metrics = {};
-    bomb_metric_t bomb_metrics = {};
 };

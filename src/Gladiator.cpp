@@ -28,12 +28,15 @@ coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
     coordinate_t closestBomb = {0, 0};// default value, to change
     float minDistance = std::numeric_limits<float>::max();
 
-    for (const coordinate_t &bomb : bomb_metrics) {
-        coordinate_t distance = {bomb.first - coords.first, bomb.second - coords.second};
+    for (auto [coordinate, metric]: metrics) {
+        if (metric.no_bomb == 0) {
+            continue;
+        }
+        coordinate_t distance = {coordinate.first - coords.first, coordinate.second - coords.second};
         int dist = ABS(distance.first) + ABS(distance.second);
         if (dist < minDistance) {
             minDistance = dist;
-            closestBomb = coords;
+            closestBomb = coordinate;
         }
     }
     return closestBomb;
@@ -48,7 +51,7 @@ void SentienceGladiator::fillNeighborsMetrics(const MazeSquare &maze)
         if (neighbor != nullptr) {
             coordinate_t coords = {neighbor->i, neighbor->j};
             square_metric_t &cur_metric = metrics[coords];
-            if (cur_metric.score)
+            if (cur_metric.is_visited)
                 continue;
             checkSquare(*neighbor, cur_metric);
         }
@@ -58,10 +61,10 @@ void SentienceGladiator::fillNeighborsMetrics(const MazeSquare &maze)
 void SentienceGladiator::checkSquare(const MazeSquare &maze,
                                      square_metric_t &cur)
 {
+    gladiator->log("%d - %d", maze.i, maze.j);
     cur.score = getCaseScore(maze);
-    if (maze.isBomb) {
-        bomb_metrics.push_back({maze.i, maze.j});
-    }
+    cur.is_visited = true;
+    cur.no_bomb = maze.coin.value;
 
     // recursive call to explore all square
     fillNeighborsMetrics(maze);
