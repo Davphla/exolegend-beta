@@ -2,6 +2,7 @@
 
 #include "gladiator.h"
 #include <algorithm>
+#include <deque>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -100,8 +101,8 @@ namespace navigation {
             openList.push_back(successor);
         }
 
-        static std::vector<MazeSquare *> reconstructPath(std::shared_ptr<Node> node) {
-            std::vector<MazeSquare *> path;
+        static std::deque<MazeSquare *> reconstructPath(std::shared_ptr<Node> node) {
+            std::deque<MazeSquare *> path;
             while (node != nullptr) {
                 path.push_back(node->getSquare());
                 node = node->getParent();
@@ -109,7 +110,7 @@ namespace navigation {
             return path;
         }
 
-        static std::vector<MazeSquare *> findPath(MazeSquare *start, MazeSquare *goal) {
+        static std::deque<MazeSquare *> findPath(MazeSquare *start, MazeSquare *goal) {
             std::unordered_map<MazeSquare *, std::shared_ptr<Node>> openList;
             std::unordered_map<MazeSquare *, std::shared_ptr<Node>> closedList;
 
@@ -149,7 +150,7 @@ namespace navigation {
                 iteration++;
             }
             gladiator->log("No path found on %u iteration\n", iteration);
-            return std::vector<MazeSquare *>();
+            return std::deque<MazeSquare *>();
         };
     };
 };

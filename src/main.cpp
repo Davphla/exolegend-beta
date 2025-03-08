@@ -3,6 +3,7 @@
 #include "Gladiator.hpp"
 #include "Vector.hpp"
 #include "gladiator.h"
+#include "utils.hpp"
 #include <csignal>
 
 #define ROBOT_ID 80
@@ -22,7 +23,7 @@ SentienceGladiator sentience;
 #define RAD2DEG(x) (x * 57.2957795131)
 
 Control control;
-void go_to(Gladiator *gladiator, Position cons, Position pos);
+void go_to(Position cons, Position pos);
 
 void reset()
 {
@@ -37,37 +38,57 @@ void setup()
     sentience = SentienceGladiator();
 }
 
-void depositBomb()
-{
+void depositBomb() {
+    if (gladiator->weapon->getBombCount() == 0) {
+        return;
+    }
     gladiator->weapon->dropBombs(gladiator->weapon->getBombCount());
+}
+
+void findNewBomb() {
+    if (sentience.goal != nullptr) {
+        if (sentience.goal->coin.value > 0) {
+            return;
+        }
+    }
+    coordinate_t coords = sentience.findClosestBomb(*gladiator->maze->getNearestSquare());
+    sentience.goal = gladiator->maze->getSquare(coords.first, coords.second);
+    sentience._path = navigation::PathFinder::findPath(gladiator->maze->getNearestSquare(), gladiator->maze->getSquare(coords.first, coords.second));
+    gladiator->log("Following path of %ld checkpoint", sentience._path.size());
+}
+
+void followPath() {
+    if (sentience._path.empty()) {
+        return;
+    }
+    auto realPosition = mazeToReal({sentience._path.back()->i, sentience._path.back()->j});
+    go_to({realPosition.x, realPosition.y, 0}, gladiator->robot->getData().position);
+
+    if (sentience._path.back() == gladiator->maze->getNearestSquare()) {
+        gladiator->log("Checkpoint");
+        sentience._path.pop_back();
+    }
 }
 
 void gloop()
 {
-    MazeSquare square = *gladiator->maze->getNearestSquare();
-    sentience.processMaze(square);
-
-    for (auto [coords, metric] : sentience.metrics) {
-        if (metric.no_bomb > 0) {
-            gladiator->log("Bomb on %d - %d", coords.first, coords.second);
-        }
+    MazeSquare *square = gladiator->maze->getNearestSquare();
+    if (square != nullptr) {
+        sentience.processMaze(*square);
     }
-    coordinate_t coords = sentience.findClosestBomb(square);
-    auto realPosition = mazeToReal(coords);
-
-    gladiator->log("Bomb coordinates: (%f, %f)", coords.first, coords.second);
-    go_to(gladiator, {realPosition.x, realPosition.y, 0},
-          gladiator->robot->getData().position);
     depositBomb();
-    //gladiator->log("Bomb: %u %u", tmp->i, tmp->j);
-
-    // ~ 10 seconds
+    findNewBomb();
+    followPath();
     static std::time_t start_time = std::time(0);
     std::time_t elapsed_time = std::time(0) - start_time;
     if (elapsed_time >= 15) {
         sentience.shrink_value += 1;
         start_time = std::time(0); // reset start time
     }
+
+    /*coordinate_t coords = {sentience.goal->i, sentience.goal->j};
+    auto realPosition = mazeToReal(coords);
+    go_to({realPosition.x, realPosition.y, 0},gladiator->robot->getData().position);*/
 }
 
 void loop()

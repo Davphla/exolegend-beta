@@ -35,7 +35,7 @@ bool check_shrink(std::pair<uint, uint> coord, uint shrink, uint map_size)
 coordinate_t SentienceGladiator::findClosestBomb(MazeSquare &cur)
 {
     coordinate_t coords = {cur.i, cur.j};
-    coordinate_t closestBomb = {0, 0};// default value, to change
+    coordinate_t closestBomb = {1, 1};// default value, to change
     float minDistance = std::numeric_limits<float>::max();
 
     for (auto [coordinate, metric] : metrics) {
@@ -73,7 +73,6 @@ void SentienceGladiator::fillNeighborsMetrics(const MazeSquare &maze)
 void SentienceGladiator::checkSquare(const MazeSquare &maze,
                                      square_metric_t &cur)
 {
-    gladiator->log("%d - %d", maze.i, maze.j);
     cur.score = getCaseScore(maze);
     cur.is_visited = true;
     cur.no_bomb = maze.coin.value;
