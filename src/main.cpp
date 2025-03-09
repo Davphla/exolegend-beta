@@ -5,6 +5,7 @@
 #include "gladiator.h"
 #include "utils.hpp"
 #include <csignal>
+#include <chrono>
 
 #define ROBOT_ID 80
 
@@ -87,8 +88,10 @@ void changeState() {
     }
 }
 
+
 void gloop()
 {
+    static std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     MazeSquare *square = gladiator->maze->getNearestSquare();
     if (square != nullptr) {
         sentience.processMaze(*square);
@@ -97,11 +100,11 @@ void gloop()
     changeState();
     followPath();
 
-    static std::time_t start_time = std::time(0);
-    std::time_t elapsed_time = std::time(0) - start_time;
-    if (elapsed_time >= 20) {
+    std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_time = end - start;
+    if (elapsed_time.count() >= 20) {
         sentience.shrink_value += 1;
-        start_time = std::time(0); // reset start time
+        start = std::chrono::system_clock::now();
     }
 
     /*coordinate_t coords = {sentience.goal->i, sentience.goal->j};
