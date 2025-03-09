@@ -9,6 +9,13 @@ The goal was to program a Gladiator algorithm (Robot fighting in an arena) follo
 
 ![Game Master](images/Simulator.png)
 
+And for sure, we had to use real robots in real arena :)
+
+![Real Robot](images/real_robot.png)
+![Arena](images/arena.png)
+
+
+
 ## Program Overview:
 
 **Day 1** (March 7): Participants arrived, assembled their robots, and installed the Exolegend software. The day concluded with a conference evening discussing the future of robotics.
