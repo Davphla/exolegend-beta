@@ -1,11 +1,11 @@
 #include "Gladiator.hpp"
 #include <algorithm>
 
-double kw = 3;
-double kv = 1.8f;
-double wlimit = 3.f;
-double vlimit = 0.6;
-double erreurPos = 0.07;
+float kw = 1.2;
+float kv = 1.f;
+float wlimit = 3.f;
+float vlimit = 0.6;
+float erreurPos = 0.07;
 
 double reductionAngle(double x)
 {
