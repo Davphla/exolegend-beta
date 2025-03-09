@@ -5,7 +5,7 @@
 
 [Exolegend #3](exolegend.com) is a robotics programming competition organized by [Exotec](https://www.exotec.com/), a leading French industrial robotics company. It took place from March 7 to 9, 2025, at the Matmut Stadium Gerland in Lyon with over 150 participants, including students and professionals
 
-The goal was to program a Gladiator algorithm (Robot fighting in an arena) following game's rules. They had to maximize the team's territory by coloring grid cells using bombs and eliminating opposing robots within a 120-second match. Strategic use of bombs and navigation skills are essential to outmaneuver opponents and secure victory.
+The goal was to program a Gladiator algorithm (Robot fighting in an arena) following defined rules. They had to maximize the team's territory by coloring grid cells using bombs and eliminating opposing robots within a 120-second match. Strategic use of bombs and navigation skills are essential to outmaneuver opponents and secure victory.
 
 ![Game Master](images/Simulator.png)
 
